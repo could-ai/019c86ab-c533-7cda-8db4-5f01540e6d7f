@@ -59,19 +59,25 @@ class _DirectoryScreenState extends State<DirectoryScreen> {
         sortAlphabetical: _sortAlphabetical,
       );
 
-      setState(() {
-        _keywords.addAll(newItems);
-        _currentPage++;
-        _isLoading = false;
-        if (newItems.length < _limit) {
-          _hasMore = false;
-        }
-      });
+      if (mounted) {
+        setState(() {
+          _keywords.addAll(newItems);
+          _currentPage++;
+          _isLoading = false;
+          if (newItems.length < _limit) {
+            _hasMore = false;
+          }
+        });
+      }
     } catch (e) {
-      setState(() {
-        _isLoading = false;
-      });
-      // Handle error
+      if (mounted) {
+        setState(() {
+          _isLoading = false;
+        });
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Error loading data: $e')),
+        );
+      }
     }
   }
 
@@ -161,7 +167,21 @@ class _DirectoryScreenState extends State<DirectoryScreen> {
                 // Keyword List
                 Expanded(
                   child: _keywords.isEmpty && !_isLoading
-                      ? const Center(child: Text('No keywords found.'))
+                      ? Center(
+                          child: Column(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              const Icon(Icons.search_off, size: 64, color: Colors.grey),
+                              const SizedBox(height: 16),
+                              const Text('No keywords found.', style: TextStyle(color: Colors.grey, fontSize: 16)),
+                              const SizedBox(height: 8),
+                              ElevatedButton(
+                                onPressed: _resetAndReload,
+                                child: const Text('Retry'),
+                              ),
+                            ],
+                          ),
+                        )
                       : ListView.builder(
                           controller: _scrollController,
                           padding: const EdgeInsets.all(16),
@@ -186,7 +206,6 @@ class _DirectoryScreenState extends State<DirectoryScreen> {
           ),
         ],
       ),
-      // Drawer for mobile categories if preferred, but horizontal list is used above
     );
   }
 
