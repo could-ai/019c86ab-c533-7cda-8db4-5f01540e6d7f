@@ -1,7 +1,18 @@
 import 'package:flutter/material.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
 import 'screens/directory_screen.dart';
 
-void main() {
+void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+
+  // Initialize Supabase
+  // IMPORTANT: Replace these placeholders with your actual Supabase URL and Anon Key
+  // You can find these in your Supabase Project Settings -> API
+  await Supabase.initialize(
+    url: 'YOUR_SUPABASE_URL', 
+    anonKey: 'YOUR_SUPABASE_ANON_KEY',
+  );
+
   runApp(const InurlDirectoryApp());
 }
 
